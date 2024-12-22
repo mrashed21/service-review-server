@@ -33,7 +33,13 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
-
+    
+    // post a service
+    app.post("/service/add", async (req, res) => {
+      const service = req.body;
+      const result = await serviceCollection.insertOne(service);
+      res.send(result);
+    });
     
     await client.db("admin").command({ ping: 1 });
     console.log(
