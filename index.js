@@ -1,4 +1,3 @@
-
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion } = require("mongodb");
@@ -28,7 +27,14 @@ async function run() {
     const database = client.db("serviceDB");
     const serviceCollection = database.collection("service");
 
+    // get all services
+    app.get("/service", async (req, res) => {
+      const cursor = serviceCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
+    
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
