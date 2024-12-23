@@ -40,7 +40,7 @@ async function run() {
       const service = await serviceCollection.findOne(query);
       res.send(service);
     });
-
+    //  post a service
     app.post("/service/add", async (req, res) => {
       const service = req.body;
       const result = await serviceCollection.insertOne(service);
@@ -74,7 +74,15 @@ async function run() {
       const reviews = await reviewsCollection.find(query).toArray();
       res.send(reviews);
     });
-
+    // Get reviews for a specific user by email
+    app.get("/reviews/me/:email", async (req, res) => {
+      const { email } = req.params;
+      const query = {
+        userEmail: email,
+      };
+      const reviews = await reviewsCollection.find(query).toArray();
+      res.send(reviews);
+    });
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
