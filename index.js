@@ -47,6 +47,17 @@ async function run() {
       res.send(result);
     });
 
+    // Get services for a specific user by email
+    app.get("/service/me/:email", async (req, res) => {
+      const { email } = req.params;
+      console.log("Received Email:", email);
+      const query = {
+        userEmail: email,
+      };
+      const services = await serviceCollection.find(query).toArray();
+      res.send(services);
+    });
+
     // reviews
     //  Add a new review
     const reviewsCollection = database.collection("reviews");
