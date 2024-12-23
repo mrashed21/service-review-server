@@ -41,17 +41,27 @@ async function run() {
       res.send(service);
     });
 
-    // app.get("/service/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: new ObjectId(id) };
-    //   const result = await serviceCollection.findOne(query);
-    //   res.send(result);
-    // });
-    // post a service
     app.post("/service/add", async (req, res) => {
       const service = req.body;
       const result = await serviceCollection.insertOne(service);
       res.send(result);
+    });
+
+    // reviews
+    //  Add a new review
+    const reviewsCollection = database.collection("reviews");
+    app.post("/reviews/add", async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
+      res.send(result);
+    });
+
+    // Fetch reviews by service ID
+    app.get("/reviews/:serviceId", async (req, res) => {
+      const { serviceId } = req.params;
+      const query = { serviceId };
+      const reviews = await reviewsCollection.find(query).toArray();
+      res.send(reviews);
     });
 
     await client.db("admin").command({ ping: 1 });
