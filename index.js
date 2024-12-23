@@ -46,6 +46,16 @@ async function run() {
       const result = await serviceCollection.insertOne(service);
       res.send(result);
     });
+    // update a service
+    app.put("/service/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: req.body,
+      };
+      const result = await serviceCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
 
     // Get services for a specific user by email
     app.get("/service/me/:email", async (req, res) => {
