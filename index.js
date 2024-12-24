@@ -28,11 +28,29 @@ async function run() {
     const serviceCollection = database.collection("service");
 
     // get all services
+    // app.get("/services", async (req, res) => {
+    //   const cursor = serviceCollection.find();
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // });
+
+    // Get all services with search functionality
     app.get("/services", async (req, res) => {
-      const cursor = serviceCollection.find();
+      const keyword = req.query.keyword || "";
+
+      const query = {
+        $or: [
+          { title: { $regex: keyword, $options: "i" } },
+          { category: { $regex: keyword, $options: "i" } },
+          { companyName: { $regex: keyword, $options: "i" } },
+        ],
+      };
+
+      const cursor = serviceCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
+
     // get a service by id
     app.get("/service/:id", async (req, res) => {
       const id = req.params.id;
