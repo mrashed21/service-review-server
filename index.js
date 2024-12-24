@@ -99,6 +99,24 @@ async function run() {
       const reviews = await reviewsCollection.find(query).toArray();
       res.send(reviews);
     });
+    // get review by id
+    app.get("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const review = await reviewsCollection.findOne(query);
+      res.send(review);
+    });
+    // update review
+    app.put("/review/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: req.body,
+      };
+      const result = await reviewsCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
