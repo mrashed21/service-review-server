@@ -84,7 +84,6 @@ async function run() {
     // Get services for a specific user by email
     app.get("/service/me/:email", async (req, res) => {
       const { email } = req.params;
-      console.log("Received Email:", email);
       const query = {
         userEmail: email,
       };
