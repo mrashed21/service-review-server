@@ -47,7 +47,7 @@ async function run() {
       res.send(result);
     });
     // update a service
-    app.put("/service/:id", async (req, res) => {
+    app.put("/service/update/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const updateDoc = {
@@ -56,7 +56,13 @@ async function run() {
       const result = await serviceCollection.updateOne(query, updateDoc);
       res.send(result);
     });
-
+    // delete a service
+    app.delete("/service/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await serviceCollection.deleteOne(query);
+      res.send(result);
+    });
     // Get services for a specific user by email
     app.get("/service/me/:email", async (req, res) => {
       const { email } = req.params;
