@@ -58,6 +58,13 @@ async function run() {
       const service = await serviceCollection.findOne(query);
       res.send(service);
     });
+    // featured service
+    app.get("/services/featured", async (req, res) => {
+      const cursor = serviceCollection.find().limit(6);
+      const service = await cursor.toArray();
+      res.send(service);
+    });
+
     //  post a service
     app.post("/service/add", async (req, res) => {
       const service = req.body;
