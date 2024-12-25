@@ -23,16 +23,33 @@ async function run() {
   try {
     // Connect the client to the server (optional starting in v4.7)
     await client.connect();
-
     const database = client.db("serviceDB");
-    const serviceCollection = database.collection("service");
+    const userCollection = database.collection("users");
 
-    // get all services
-    // app.get("/services", async (req, res) => {
-    //   const cursor = serviceCollection.find();
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // });
+    // Add new user
+    app.post("/users/add", (req, res) => {
+      const { email, name, photoURL } = req.body;
+      userCollection
+        .findOne({ email })
+        .then((existingUser) => {
+          if (!existingUser) {
+            userCollection.insertOne({ email, name, photoURL });
+          }
+        })
+        .catch((error) => {
+          console.error("Error adding user:", error);
+        });
+    });
+
+    // Get all user
+    app.get("/users", async (req, res) => {
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // service 
+    const serviceCollection = database.collection("service");
 
     // Get all services with search functionality
     app.get("/services", async (req, res) => {
@@ -99,8 +116,32 @@ async function run() {
     });
 
     // reviews
-    //  Add a new review
     const reviewsCollection = database.collection("reviews");
+    // get all reviews
+    app.get("/reviews/all", async (req, res) => {
+      const cursor = reviewsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // Get reviews for a specific service by id
+    app.get("/reviews/:serviceId", async (req, res) => {
+      const { serviceId } = req.params;
+      const query = { serviceId };
+      const reviews = await reviewsCollection.find(query).toArray();
+      res.send(reviews);
+    });
+    // Get reviews for a specific user by email
+    app.get("/reviews/me/:email", async (req, res) => {
+      const { email } = req.params;
+      const query = {
+        userEmail: email,
+      };
+      const reviews = await reviewsCollection.find(query).toArray();
+      res.send(reviews);
+    });
+    //  Add a new review
+
     app.post("/reviews/add", async (req, res) => {
       const review = req.body;
       const result = await reviewsCollection.insertOne(review);
