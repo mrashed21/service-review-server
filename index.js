@@ -10,7 +10,11 @@ const port = process.env.PORT || 4000;
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4173",
+      "https://services-review.netlify.app",
+    ],
     credentials: true,
     optionalSuccessStatus: 200,
   })
@@ -26,7 +30,6 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
-         
 
 const verifyToken = (req, res, next) => {
   const token = req.cookies?.token;
@@ -39,8 +42,8 @@ const verifyToken = (req, res, next) => {
       return res.status(401).send({ message: "unauthorized access" });
     }
 
-    req.user = decoded; // Decode successful
-    next(); // Move inside the success block
+    req.user = decoded;
+    next();
   });
 };
 
@@ -65,16 +68,6 @@ async function run() {
         })
         .send({ success: true });
     });
-    // Endpoint to clear the JWT token (logout)
-    // app.get("/logout", async (req, res) => {
-    //   res
-    //     .clearCookie("token", {
-    //       maxAge: 0,
-    //       secure: process.env.NODE_ENV === "production",
-    //       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-    //     })
-    //     .send({ success: true });
-    // });
 
     app.get("/logout", async (req, res) => {
       try {
@@ -84,9 +77,9 @@ async function run() {
           sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         });
 
-        return res.status(200).send({ success: true }); // Add RETURN here
+        return res.status(200).send({ success: true });
       } catch (error) {
-        return res.status(500).send({ message: "Server error" }); // Handle errors
+        return res.status(500).send({ message: "Server error" });
       }
     });
 
@@ -118,8 +111,10 @@ async function run() {
     app.get("/services", async (req, res) => {
       const keyword = req.query.keyword || "";
       const category = req.query.category || "";
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 8;
+      const skip = (page - 1) * limit;
 
-      // Create query conditions based on search and category
       let query = {};
 
       if (keyword) {
@@ -133,11 +128,19 @@ async function run() {
       if (category && category !== "All Categories") {
         query.category = category;
       }
-
       try {
-        const cursor = serviceCollection.find(query);
-        const result = await cursor.toArray();
-        res.send(result);
+        const total = await serviceCollection.countDocuments(query);
+        const services = await serviceCollection
+          .find(query)
+          .skip(skip)
+          .limit(limit)
+          .toArray();
+        res.send({
+          services,
+          total,
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+        });
       } catch (err) {
         res
           .status(500)
@@ -145,7 +148,6 @@ async function run() {
       }
     });
 
-    // get a service by id
     app.get("/service/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
