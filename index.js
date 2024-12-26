@@ -65,7 +65,7 @@ async function run() {
         .send({ success: true });
     });
 
-    app.get("/logout", async (req, res) => {
+    app.post("/logout", async (req, res) => {
       try {
         res.clearCookie("token", {
           maxAge: 0,
