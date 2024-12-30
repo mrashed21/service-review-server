@@ -6,11 +6,11 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const app = express();
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ["https://services-review.netlify.app"],
+    origin: ["http://localhost:5173", "https://services-review.netlify.app"],
     credentials: true,
     optionalSuccessStatus: 200,
   })
@@ -46,7 +46,7 @@ const verifyToken = (req, res, next) => {
 async function run() {
   try {
     // Connect the client to the server (optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     const database = client.db("serviceDB");
     const userCollection = database.collection("users");
 
