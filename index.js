@@ -152,7 +152,7 @@ async function run() {
     });
     // featured service
     app.get("/services/featured", async (req, res) => {
-      const cursor = serviceCollection.find().limit(6);
+      const cursor = serviceCollection.find().limit(8);
       const service = await cursor.toArray();
       res.send(service);
     });
