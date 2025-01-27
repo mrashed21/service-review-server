@@ -1,4 +1,3 @@
-````markdown
 # Service Provider API
 
 This repository contains the backend code for a **Service Provider** application, built using **Node.js**, **Express.js**, and **MongoDB**. The API allows users to manage services, reviews, and authentication securely and efficiently.
@@ -9,7 +8,7 @@ This repository contains the backend code for a **Service Provider** application
 
 The client-side application for this backend can be accessed at:
 
-## **Client URL**: [Client URL](https://services-review.netlify.app/)
+## [Client URL](https://services-review.netlify.app/)
 
 ## Table of Contents
 
@@ -71,7 +70,6 @@ The client-side application for this backend can be accessed at:
   JWT_SECRET=<your-jwt-secret>
   NODE_ENV=development
   ```
-````
 
 ### Steps
 
